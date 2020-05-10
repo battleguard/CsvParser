@@ -31,6 +31,10 @@ std::vector<std::vector<std::string>> GetCsvData(std::istream& str)
     return output;
 }
 
+// http://www.cplusplus.com/reference/istream/istream/read/
+
+// original: 24263
+// raw char bob 4218
 int main()
 {
     auto start = high_resolution_clock::now();

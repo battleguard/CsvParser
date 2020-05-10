@@ -13,42 +13,51 @@ std::map<std::string, std::vector<double>> CsvParser::GetColumns(
 {
 	std::map<std::string, std::vector<double>> output;
 	std::map<std::string,int> aHeaderKeyIndexes;
-	std::vector<bool> columns;
+	bool columns[10];
 	std::map<int, std::vector<double>> columnData;
-	std::ifstream myfile(aCsvFilePath);
+	std::ifstream myfile(aCsvFilePath, std::ifstream::binary);
 	std::string                headerText;
-	std::getline(myfile, headerText);
+	std::getline(myfile, headerText, '\r');
 	std::stringstream          lineStream(headerText);
 	std::string headerCell;
+	int columnCount = 0;
 	while (std::getline(lineStream, headerCell, ','))
 	{
 		bool found = aHeaderKeys.find(headerCell) != aHeaderKeys.cend();
 		if (found)
 		{ // map column index to key for later
-			aHeaderKeyIndexes[headerCell] = columns.size();
+			aHeaderKeyIndexes[headerCell] = columnCount;
 		}
-		columns.push_back(found);
+		columns[columnCount] = found;
+		columnCount++;
 	}
 
-	int index = 0;
-	std::string rowText;
-	while (std::getline(myfile, rowText))
+	// adding 1 to skip teh '\n'
+	int endOfHeader = 1 + myfile.tellg();
+	myfile.seekg(0, myfile.end);
+	int length = static_cast<int>(myfile.tellg()) - endOfHeader;
+	myfile.seekg(endOfHeader);
+	char* buffer = new char[length];
+	myfile.read(buffer, length);
+
+	const char* endPtr = buffer + length;
+
+	// increment over newlines \r\n so just 1 since we already always increment 1 for the ,
+	for (char* curPtr = buffer; curPtr < buffer + length; curPtr++) 
 	{
-		index++;
-		char* curIdxPtr = &rowText.front();
-		for (int i = 0; i < columns.size(); ++i)
+		for (int i = 0; i < columnCount; ++i)
 		{
 			if (columns[i])
 			{
-				double value = strtod(curIdxPtr, &curIdxPtr);
+				double value = strtod(curPtr, &curPtr);
 				//std::cout << "value:" << value << std::endl;
 				columnData[i].push_back(value);
-			} 
+			}
 			else {
-				curIdxPtr = strchr(curIdxPtr, ',');
+				curPtr = strchr(curPtr, ',');
 				//std::cout << "skippng: " << i << std::endl;
 			}
-			curIdxPtr++;
+			curPtr++;
 		}
 	}
 
@@ -57,5 +66,6 @@ std::map<std::string, std::vector<double>> CsvParser::GetColumns(
 		auto idx = aHeaderKeyIndexes[headerKey];
 		output[headerKey] = std::move(columnData[idx]);
 	}
+	delete []buffer;
 	return std::move(output);
 }
