@@ -35,6 +35,7 @@ std::vector<std::vector<std::string>> GetCsvData(std::istream& str)
 
 // original: 24263
 // raw char bob 4218
+// removed maps 3170
 int main()
 {
     auto start = high_resolution_clock::now();

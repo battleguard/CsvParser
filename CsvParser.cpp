@@ -14,7 +14,7 @@ std::map<std::string, std::vector<double>> CsvParser::GetColumns(
 	std::map<std::string, std::vector<double>> output;
 	std::map<std::string,int> aHeaderKeyIndexes;
 	bool columns[10];
-	std::map<int, std::vector<double>> columnData;
+	std::vector<double> columnData[10];
 	std::ifstream myfile(aCsvFilePath, std::ifstream::binary);
 	std::string                headerText;
 	std::getline(myfile, headerText, '\r');
