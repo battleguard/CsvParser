@@ -10,27 +10,6 @@
 
 using namespace std::chrono;
 
-
-
-std::vector<std::vector<std::string>> GetCsvData(std::istream& str)
-{
-    std::vector<std::vector<std::string>> output;
-    std::string                line;
-    while (std::getline(str, line))
-    {
-        std::vector<std::string>   result;
-        std::stringstream          lineStream(line);
-        std::string                cell;
-
-        while (std::getline(lineStream, cell, ','))
-        {
-            result.push_back(cell);
-        }
-        output.push_back(result);
-    }
-    return output;
-}
-
 // http://www.cplusplus.com/reference/istream/istream/read/
 
 // original: 24263
